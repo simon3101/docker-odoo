@@ -10,3 +10,6 @@ venv
 # Pero dentro de custom, ignorar __pycache__
 src/custom/**/__pycache__/
 src/custom/**/*.pyc
+
+# Ignorar metadatos de Windows/WSL
+*:Zone.Identifier
