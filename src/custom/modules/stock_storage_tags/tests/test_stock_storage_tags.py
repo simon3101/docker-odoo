@@ -68,3 +68,19 @@ class TestStockStorageTags(TransactionCase):
         product_b.storage_tag_ids = [(4, self.tag_a.id)]
         self.assertIn(self.product, self.tag_a.product_ids)
         self.assertIn(product_b, self.tag_a.product_ids)
+
+    def test_wizard_opens_empty_for_product_without_tags(self):
+        """Caso límite: wizard abre vacío si el producto no tiene etiquetas"""
+        action = self.product.action_open_tag_wizard()
+        wizard = self.env['stock.product.tag.wizard'].browse(action['res_id'])
+        self.assertEqual(wizard.product_id, self.product)
+        self.assertEqual(len(wizard.storage_tag_ids), 0)
+
+    def test_tag_color_zero_raises_validation_error(self):
+        """Caso límite: crear etiqueta con color 0 debe lanzar ValidationError"""
+        from odoo.exceptions import ValidationError
+        with self.assertRaises(ValidationError):
+            self.env['stock.storage.tag'].create({
+                'name': 'Etiqueta Sin Color',
+                'color': 0,
+            })
