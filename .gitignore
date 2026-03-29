@@ -4,3 +4,9 @@ src
 .resources/dbconfigs/pg_hba.conf
 **/.vscode/
 venv
+# EXCEPTO src/custom/ (tus módulos)
+!src/custom/
+
+# Pero dentro de custom, ignorar __pycache__
+src/custom/**/__pycache__/
+src/custom/**/*.pyc
