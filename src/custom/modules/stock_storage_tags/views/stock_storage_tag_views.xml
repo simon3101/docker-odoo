@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vista de formulario de etiqueta -->
+    <record id="view_stock_storage_tag_form" model="ir.ui.view">
+        <field name="name">stock.storage.tag.form</field>
+        <field name="model">stock.storage.tag</field>
+        <field name="arch" type="xml">
+            <form string="Etiqueta de Almacenamiento">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="color" widget="color_picker"/>
+                        <field name="description"/>
+                    </group>
+                    <field name="product_ids">
+                        <list>
+                            <field name="name"/>
+                            <field name="categ_id"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista de lista de etiquetas -->
+    <record id="view_stock_storage_tag_list" model="ir.ui.view">
+        <field name="name">stock.storage.tag.list</field>
+        <field name="model">stock.storage.tag</field>
+        <field name="arch" type="xml">
+            <list string="Etiquetas de Almacenamiento">
+                <field name="name"/>
+                <field name="color" widget="color_picker"/>
+                <field name="description"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Acción para gestionar etiquetas -->
+    <record id="action_stock_storage_tags" model="ir.actions.act_window">
+        <field name="name">Etiquetas de Almacenamiento</field>
+        <field name="res_model">stock.storage.tag</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Agregar campo storage_tag_ids al formulario de producto -->
+    <record id="product_template_form_view_storage_tags" model="ir.ui.view">
+        <field name="name">product.template.form.storage.tags</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Etiquetas de Almacenamiento" name="storage_tags">
+                    <field name="storage_tag_ids" widget="many2many_tags"
+                           options="{'color_field': 'color', 'no_create_edit': False}"
+                           context="{'default_product_ids': [(4, id)]}"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Acción rápida: columna editable de etiquetas en la vista lista de productos -->
+    <record id="product_template_list_view_storage_tags" model="ir.ui.view">
+        <field name="name">product.template.list.storage.tags</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="storage_tag_ids" widget="many2many_tags"
+                       optional="show"
+                       options="{'color_field': 'color', 'no_create_edit': False}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vista kanban de productos agrupados por etiqueta -->
+    <record id="view_product_kanban_by_storage_tag" model="ir.ui.view">
+        <field name="name">product.template.kanban.storage.tag</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name"/>
+                <field name="storage_tag_ids"/>
+                <field name="qty_available"/>
+                <field name="categ_id"/>
+                <templates>
+                    <t t-name="card">
+                        <field name="name" class="fw-bold"/>
+                        <div class="text-muted">
+                            <field name="categ_id"/>
+                        </div>
+                        <div>
+                            Stock: <field name="qty_available"/>
+                        </div>
+                        <div>
+                            <field name="storage_tag_ids" widget="many2many_tags"
+                                   options="{'color_field': 'color'}"/>
+                        </div>
+                        <div>
+                            <button name="action_open_tag_wizard"
+                                    type="object"
+                                    string="Gestionar Etiquetas"
+                                    class="btn btn-sm btn-secondary"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Acción para el kanban de productos por etiqueta -->
+    <record id="action_products_by_storage_tag" model="ir.actions.act_window">
+        <field name="name">Productos por Etiqueta</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{"group_by": ["storage_tag_ids"]}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_product_kanban_by_storage_tag')})]"/>
+    </record>
+
+    <!-- Menús en Inventario -->
+    <menuitem
+        id="menu_stock_storage_tags_config"
+        name="Etiquetas de Almacenamiento"
+        parent="stock.menu_stock_config_settings"
+        action="action_stock_storage_tags"
+        sequence="50"/>
+
+    <menuitem
+        id="menu_products_by_storage_tag"
+        name="Productos por Etiqueta"
+        parent="stock.menu_stock_root"
+        action="action_products_by_storage_tag"
+        sequence="98"/>
+
+</odoo>
