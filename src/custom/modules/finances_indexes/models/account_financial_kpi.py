@@ -23,7 +23,9 @@ class AccountFinancialKpi(models.Model):
 
     name = fields.Char(
         string='Nombre',
-        required=True,
+        compute='_compute_name',
+        store=True,
+        readonly=True,
     )
 
     # formula es un Selection en vez de texto libre por dos razones:
@@ -74,6 +76,26 @@ class AccountFinancialKpi(models.Model):
         compute='_compute_value',
         store=False,
     )
+
+    FORMULA_PREFIXES = {
+        'gross_margin': 'GM',
+        'current_ratio': 'CR',
+        'receivables_turnover': 'RT',
+    }
+    _sql_constraints = [
+            ('unique_formula', 'UNIQUE(formula)',
+            'Ya existe un KPI configurado para esta fórmula.'),
+        ]
+
+    @api.depends('formula')
+    def _compute_name(self):
+        labels = {
+            'gross_margin': 'GM-01',
+            'current_ratio': 'CR-01',
+            'receivables_turnover': 'RT-01',
+        }
+        for kpi in self:
+            kpi.name = labels.get(kpi.formula, '')
 
     @api.constrains('threshold_warning', 'threshold_critical')
     def _check_thresholds(self):

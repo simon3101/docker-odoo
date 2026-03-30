@@ -133,3 +133,14 @@ class TestFinancesIndexes(TransactionCase):
         for month in data:
             self.assertIn('label', month)
             self.assertIn('value', month)
+
+    def test_unique_formula_constraint(self):
+        """Caso límite: no se pueden crear dos KPIs con la misma fórmula"""
+        from psycopg2 import IntegrityError
+        with self.assertRaises(IntegrityError):
+            with self.env.cr.savepoint():
+                self.env['account.financial.kpi'].create({
+                    'formula': 'gross_margin',
+                    'threshold_warning': 50.0,
+                    'threshold_critical': 20.0,
+                })
