@@ -14,69 +14,17 @@
         </field>
     </record>
 
-    <!-- Vista kanban de productos en stock crítico -->
-    <record id="view_stock_critical_kanban" model="ir.ui.view">
-        <field name="name">product.template.kanban.stock.critical</field>
-        <field name="model">product.template</field>
-        <field name="arch" type="xml">
-            <kanban>
-                <field name="name"/>
-                <field name="qty_available"/>
-                <field name="stock_min"/>
-                <field name="categ_id"/>
-                <field name="stock_alert_sent"/>
-                <templates>
-                    <t t-name="card">
-                        <div style="border-left: 5px solid #dc3545; padding-left: 10px;">
-                            <div class="fw-bold fs-5 text-dark">
-                                <field name="name"/>
-                            </div>
-                            <div class="mt-2 d-flex justify-content-between">
-                                <div>
-                                    <small class="text-muted">Disponible</small>
-                                    <div class="fw-bold text-danger fs-4">
-                                        <field name="qty_available"/>
-                                    </div>
-                                </div>
-                                <div class="text-end">
-                                    <small class="text-muted">Mínimo</small>
-                                    <div class="fw-bold text-warning fs-4">
-                                        <field name="stock_min"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-1 text-muted small">
-                                <field name="categ_id"/>
-                            </div>
-                            <div class="mt-2">
-                                <button name="action_check_critical_stock"
-                                        type="object"
-                                        string="🔄 Verificar Stock"
-                                        class="btn btn-sm btn-outline-danger"/>
-                            </div>
-                        </div>
-                    </t>
-                </templates>
-            </kanban>
-        </field>
-    </record>
-
-    <!-- Acción para el tablero de stock crítico -->
-    <record id="action_stock_critical_products" model="ir.actions.act_window">
-        <field name="name">Productos en Stock Crítico</field>
-        <field name="res_model">product.template</field>
-        <field name="view_mode">kanban,list,form</field>
-        <field name="domain">[('stock_alert_sent', '=', True)]</field>
-        <field name="context">{'group_by': 'categ_id'}</field>
-        <field name="view_ids" eval="[(5, 0, 0),
-            (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_stock_critical_kanban')})]"/>
+    <!-- Client action para el tablero OWL -->
+    <record id="action_stock_critical_dashboard" model="ir.actions.client">
+        <field name="name">Stock Crítico</field>
+        <field name="tag">stock_critical_alert.dashboard</field>
     </record>
 
     <menuitem
         id="menu_stock_critical_alert"
         name="Stock Crítico"
         parent="stock.menu_stock_root"
-        action="action_stock_critical_products"
+        action="action_stock_critical_dashboard"
         sequence="99"/>
 
 </odoo>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="stock_critical_alert.Dashboard">
+        <div class="o_action o_view_controller" style="padding: 24px; background: #f8f9fa; min-height: 100vh;">
+
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 style="color: #dc3545; font-weight: bold; margin: 0;">
+                        ⚠️ Tablero de Stock Crítico
+                    </h2>
+                    <small class="text-muted">Productos con stock por debajo del mínimo configurado</small>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div t-if="state.loading" class="text-center mt-5">
+                <div class="spinner-border text-danger" role="status"/>
+                <p class="mt-3 text-muted">Cargando productos críticos...</p>
+            </div>
+
+            <!-- Sin productos críticos -->
+            <div t-elif="state.products.length === 0" class="text-center mt-5">
+                <div style="font-size: 4rem;">✅</div>
+                <h4 class="text-success mt-2">¡Todo en orden!</h4>
+                <p class="text-muted">No hay productos con alertas de stock crítico activas.</p>
+            </div>
+
+            <div t-else="">
+
+                <!-- Gráfica de barras -->
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-header" style="background: #1A3A5C; color: white; font-weight: bold;">
+                        📊 Gráfica de Stock Crítico
+                    </div>
+                    <div class="card-body">
+                        <canvas id="stock-critical-chart" style="max-height: 280px;"/>
+                    </div>
+                </div>
+
+                <!-- Kanban por categoría -->
+                <t t-foreach="groupByCategory()" t-as="entry" t-key="entry[0]">
+                    <div class="mb-4">
+                        <h5 class="fw-bold mb-3"
+                            style="color: #1A3A5C; border-bottom: 2px solid #dc3545; padding-bottom: 6px;">
+                            📦 <t t-esc="entry[0]"/>
+                            <span class="badge bg-danger ms-2">
+                                <t t-esc="entry[1].length"/>
+                            </span>
+                        </h5>
+                        <div class="row g-3">
+                            <t t-foreach="entry[1]" t-as="product" t-key="product.id">
+                                <div class="col-12 col-md-4 col-lg-3">
+                                    <div class="card border-0 shadow-sm h-100"
+                                         style="border-left: 5px solid #dc3545 !important;">
+                                        <div class="card-body">
+                                            <h6 class="fw-bold text-dark mb-3"
+                                                style="cursor: pointer;"
+                                                t-on-click="() => openProduct(product.id)">
+                                                <t t-esc="product.name"/>
+                                            </h6>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <div>
+                                                    <small class="text-muted d-block">Disponible</small>
+                                                    <span class="fw-bold text-danger fs-4">
+                                                        <t t-esc="product.qty_available.toFixed(2)"/>
+                                                    </span>
+                                                </div>
+                                                <div class="text-end">
+                                                    <small class="text-muted d-block">Mínimo</small>
+                                                    <span class="fw-bold text-warning fs-4">
+                                                        <t t-esc="product.stock_min.toFixed(2)"/>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="progress mb-3" style="height: 8px;">
+                                                <div class="progress-bar bg-danger"
+                                                     t-attf-style="width: {{ Math.min((product.qty_available / product.stock_min) * 100, 100) }}%"/>
+                                            </div>
+                                            <button class="btn btn-sm btn-outline-danger w-100"
+                                                    t-on-click.stop="() => this.verifyStock(product.id)">
+                                                🔄 Verificar Stock
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+
+            </div>
+        </div>
+    </t>
+
+</templates>
