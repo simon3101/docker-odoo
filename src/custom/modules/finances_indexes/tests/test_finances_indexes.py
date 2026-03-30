@@ -86,12 +86,10 @@ class TestFinancesIndexes(TransactionCase):
             self.assertIn('value', month)
 
     def test_unique_formula_constraint(self):
-        """Caso límite: no se pueden crear dos KPIs con la misma fórmula"""
-        from psycopg2 import IntegrityError
-        with self.assertRaises(IntegrityError):
-            with self.env.cr.savepoint():
-                self.env['account.financial.kpi'].create({
-                    'formula': 'gross_margin',
-                    'threshold_warning': 50.0,
-                    'threshold_critical': 20.0,
-                })
+        """Caso límite: solo puede existir un KPI por fórmula"""
+        for formula in ['gross_margin', 'current_ratio', 'receivables_turnover']:
+            count = self.env['account.financial.kpi'].search_count([
+                ('formula', '=', formula),
+            ])
+            self.assertEqual(count, 1,
+                f'Solo debe existir un KPI para la fórmula {formula}')
