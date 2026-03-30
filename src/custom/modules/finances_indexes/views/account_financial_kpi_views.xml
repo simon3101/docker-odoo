@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Vista formulario de KPI -->
+    <!--
+        Vista formulario para crear y editar KPIs individualmente.
+        Muestra todos los campos configurables: nombre, fórmula predefinida,
+        umbrales de advertencia y crítico, y estado activo.
+        No muestra value ni status porque son campos computados en tiempo real
+        y no tienen sentido fuera del contexto del dashboard.
+    -->
     <record id="view_account_financial_kpi_form" model="ir.ui.view">
         <field name="name">account.financial.kpi.form</field>
         <field name="model">account.financial.kpi</field>
@@ -20,7 +26,11 @@
         </field>
     </record>
 
-    <!-- Vista lista de KPIs -->
+    <!--
+        Vista lista editable (editable="bottom") que permite crear y modificar
+        múltiples KPIs directamente desde la lista sin abrir el formulario.
+        Útil para configuración rápida de umbrales en masa.
+    -->
     <record id="view_account_financial_kpi_list" model="ir.ui.view">
         <field name="name">account.financial.kpi.list</field>
         <field name="model">account.financial.kpi</field>
@@ -35,14 +45,22 @@
         </field>
     </record>
 
-    <!-- Acción para gestionar KPIs -->
+    <!--
+        Acción de ventana para gestionar la configuración de KPIs.
+        Accesible desde el menú Contabilidad → Configuración → Indicadores Financieros.
+        Vista por defecto es lista para facilitar la gestión de múltiples KPIs.
+    -->
     <record id="action_account_financial_kpis" model="ir.actions.act_window">
         <field name="name">Indicadores Financieros</field>
         <field name="res_model">account.financial.kpi</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <!-- Menú en Contabilidad → Configuración -->
+    <!--
+        Menú de configuración dentro de Contabilidad → Configuración.
+        sequence=60 lo ubica después de las entradas estándar de contabilidad
+        pero antes del final del menú de configuración.
+    -->
     <menuitem
         id="menu_account_financial_kpis"
         name="Indicadores Financieros"

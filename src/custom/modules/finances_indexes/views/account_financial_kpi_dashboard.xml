@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Client action para el tablero -->
+    <!--
+        Client action que registra el componente OWL del dashboard en el sistema de acciones.
+        El campo 'tag' debe coincidir exactamente con el nombre registrado en el registry
+        de OWL en dashboard.js: registry.category("actions").add("finances_indexes.dashboard", ...)
+    -->
     <record id="action_financial_health_dashboard" model="ir.actions.client">
         <field name="name">Salud Financiera</field>
         <field name="tag">finances_indexes.dashboard</field>
     </record>
 
-    <!-- Menú principal en Contabilidad -->
+    <!--
+        Entrada en el menú principal de Contabilidad.
+        sequence=99 lo coloca al final del menú para no interferir con
+        las entradas estándar de Odoo.
+    -->
     <menuitem
         id="menu_account_financial_kpi_dashboard"
         name="Salud Financiera"
