@@ -50,3 +50,7 @@ class ProductTemplate(models.Model):
                 # Reset automático cuando el stock se recupera
                 if product.stock_alert_sent:
                     product.stock_alert_sent = False
+
+    def action_check_critical_stock(self):
+        """Método público para verificar el stock crítico manualmente desde la vista."""
+        self._check_critical_stock()
