@@ -12,19 +12,30 @@ class ProductTemplate(models.Model):
         help='Cantidad mínima de stock antes de generar una alerta',
     )
 
+    stock_alert_sent = fields.Boolean(
+        string='Alerta de Stock Enviada',
+        default=False,
+        copy=False,
+        help='Indica si ya se generó una alerta de stock crítico. '
+             'Se resetea automáticamente cuando el stock se recupera.',
+    )
+
     def _check_critical_stock(self):
-        """Genera una alerta en mail.message si el stock disponible
-        cae por debajo del stock mínimo. Evita duplicados."""
+        """
+        Genera una alerta en mail.message si el stock disponible
+        cae por debajo del stock mínimo. Evita duplicados usando
+        el campo booleano stock_alert_sent en vez de buscar por texto.
+
+        Incluye reset automático: cuando el stock se recupera por encima
+        del mínimo, stock_alert_sent vuelve a False para que la próxima
+        caída genere una nueva alerta.
+        """
         for product in self:
             qty = product.qty_available
+
             if product.stock_min > 0 and qty < product.stock_min:
-                already_alerted = self.env['mail.message'].search_count([
-                    ('res_id', '=', product.id),
-                    ('model', '=', 'product.template'),
-                    ('body', 'ilike', 'Stock crítico'),
-                    ('message_type', '=', 'comment'),
-                ])
-                if not already_alerted:
+                # Solo genera alerta si no se ha enviado una previamente
+                if not product.stock_alert_sent:
                     product.message_post(
                         body=Markup(
                             '⚠️ <b>Stock crítico:</b> El producto <b>%s</b> '
@@ -34,3 +45,8 @@ class ProductTemplate(models.Model):
                         message_type='comment',
                         subtype_xmlid='mail.mt_note',
                     )
+                    product.stock_alert_sent = True
+            else:
+                # Reset automático cuando el stock se recupera
+                if product.stock_alert_sent:
+                    product.stock_alert_sent = False

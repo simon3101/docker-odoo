@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Agregar campo stock_min al formulario de producto -->
     <record id="product_template_form_view_stock_min" model="ir.ui.view">
         <field name="name">product.template.form.stock.min</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='type']" position="after">
-                <field name="stock_min" string="Stock Mínimo"/>
+                <!-- stock_min solo se muestra para productos almacenables (is_storable=True)
+                     Los servicios y consumibles no tienen stock físico que monitorear -->
+                <field name="stock_min"
+                       string="Stock Mínimo"
+                       invisible="type == 'service' or type == 'combo' "/>
             </xpath>
         </field>
     </record>
 
-    <!-- Acción para el tablero de stock crítico -->
     <record id="action_stock_critical_products" model="ir.actions.act_window">
         <field name="name">Productos en Stock Crítico</field>
         <field name="res_model">product.template</field>
         <field name="view_mode">list,form</field>
-        <field name="domain">[('qty_available', '&lt;', 'stock_min'), ('stock_min', '&gt;', 0)]</field>
+        <field name="domain">[('stock_min', '&gt;', 0), ('is_storable', '=', True)]</field>
         <field name="context">{'group_by': 'categ_id'}</field>
     </record>
 
-    <!-- Menú en Inventario -->
     <menuitem
         id="menu_stock_critical_alert"
         name="Stock Crítico"
