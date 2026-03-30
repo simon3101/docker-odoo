@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Client action para el tablero -->
+    <record id="action_financial_health_dashboard" model="ir.actions.client">
+        <field name="name">Salud Financiera</field>
+        <field name="tag">finances_indexes.dashboard</field>
+    </record>
+
+    <!-- Menú principal en Contabilidad -->
+    <menuitem
+        id="menu_account_financial_kpi_dashboard"
+        name="Salud Financiera"
+        parent="account.menu_finance"
+        action="action_financial_health_dashboard"
+        sequence="99"/>
+
+</odoo>

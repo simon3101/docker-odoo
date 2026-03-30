@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="finances_indexes.Dashboard">
+        <div class="o_action o_view_controller" style="padding: 20px;">
+
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 style="color: #1A3A5C; font-weight: bold;">
+                    📊 Salud Financiera
+                </h2>
+                <button class="btn btn-primary" t-on-click="openConfig">
+                    ⚙️ Configurar KPIs
+                </button>
+            </div>
+
+            <!-- Loading -->
+            <div t-if="state.loading" class="text-center mt-5">
+                <div class="spinner-border text-primary" role="status"/>
+                <p class="mt-2 text-muted">Calculando indicadores...</p>
+            </div>
+
+            <!-- Sin KPIs -->
+            <div t-elif="state.kpis.length === 0" class="text-center mt-5">
+                <p class="text-muted fs-5">No hay indicadores configurados.</p>
+                <button class="btn btn-primary mt-2" t-on-click="openConfig">
+                    Crear primer KPI
+                </button>
+            </div>
+
+            <!-- Grid de KPIs -->
+            <div t-else="" class="row g-4">
+                <t t-foreach="state.kpis" t-as="kpi" t-key="kpi.id">
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="card h-100 shadow-sm"
+                             t-attf-style="border-left: 6px solid {{ getStatusColor(kpi.status) }};">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold text-dark">
+                                    <t t-esc="kpi.name"/>
+                                </h5>
+                                <div class="display-5 fw-bold my-3"
+                                     t-attf-style="color: {{ getStatusColor(kpi.status) }};">
+                                    <t t-esc="kpi.value.toFixed(2)"/>
+                                </div>
+                                <div class="fw-bold mb-2"
+                                     t-attf-style="color: {{ getStatusColor(kpi.status) }};">
+                                    <t t-esc="getStatusLabel(kpi.status)"/>
+                                </div>
+                                <hr/>
+                                <div class="text-muted small">
+                                    <div>
+                                        <span class="text-warning fw-bold">⚠</span>
+                                        Advertencia: <t t-esc="kpi.threshold_warning"/>
+                                    </div>
+                                    <div>
+                                        <span class="text-danger fw-bold">✖</span>
+                                        Crítico: <t t-esc="kpi.threshold_critical"/>
+                                    </div>
+                                    <div class="mt-1 font-monospace text-secondary">
+                                        f: <t t-esc="kpi.formula_label"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </div>
+
+        </div>
+    </t>
+
+</templates>
