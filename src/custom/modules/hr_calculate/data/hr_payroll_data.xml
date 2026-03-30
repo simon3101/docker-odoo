@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =============================================
+         CATEGORÍAS DE REGLAS SALARIALES
+         ALW = Asignaciones (suman al salario)
+    ============================================= -->
+    <record id="hr_salary_rule_category_benefit" model="hr.salary.rule.category">
+        <field name="name">Beneficios Laborales</field>
+        <field name="code">BEN</field>
+    </record>
+
+    <!-- =============================================
+         STRUCTURE TYPE: TIEMPO COMPLETO
+    ============================================= -->
+    <record id="structure_type_full_time" model="hr.payroll.structure.type">
+        <field name="name">Tiempo Completo</field>
+        <field name="wage_type">monthly</field>
+    </record>
+
+    <record id="structure_full_time" model="hr.payroll.structure">
+        <field name="name">Nómina Tiempo Completo</field>
+        <field name="type_id" ref="structure_type_full_time"/>
+    </record>
+
+    <!-- Regla: Salario Base -->
+    <record id="rule_basic_full_time" model="hr.salary.rule">
+        <field name="name">Salario Base</field>
+        <field name="code">BASIC</field>
+        <field name="sequence">10</field>
+        <field name="struct_id" ref="structure_full_time"/>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="condition_select">none</field>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">result = contract.wage</field>
+    </record>
+
+    <!-- Regla: Vacaciones (solo tiempo completo) -->
+    <record id="rule_vacation_full_time" model="hr.salary.rule">
+        <field name="name">Vacaciones</field>
+        <field name="code">VACATION</field>
+        <field name="sequence">20</field>
+        <field name="struct_id" ref="structure_full_time"/>
+        <field name="category_id" ref="hr_salary_rule_category_benefit"/>
+        <field name="condition_select">python</field>
+        <field name="condition_python">result = contract.contract_type == 'full_time'</field>
+        <field name="amount_select">fix</field>
+        <field name="amount_fix">150.0</field>
+        <field name="quantity">1</field>
+    </record>
+
+    <!-- Regla: Prestaciones (solo tiempo completo) -->
+    <record id="rule_severance_full_time" model="hr.salary.rule">
+        <field name="name">Prestaciones</field>
+        <field name="code">SEVERANCE</field>
+        <field name="sequence">30</field>
+        <field name="struct_id" ref="structure_full_time"/>
+        <field name="category_id" ref="hr_salary_rule_category_benefit"/>
+        <field name="condition_select">python</field>
+        <field name="condition_python">result = contract.contract_type == 'full_time'</field>
+        <field name="amount_select">percentage</field>
+        <field name="amount_percentage">10.0</field>
+        <field name="amount_percentage_base">contract.wage</field>
+        <field name="quantity">1</field>
+    </record>
+
+    <!-- Regla: Bono (tiempo completo) -->
+    <record id="rule_bonus_full_time" model="hr.salary.rule">
+        <field name="name">Bono</field>
+        <field name="code">BONUS</field>
+        <field name="sequence">40</field>
+        <field name="struct_id" ref="structure_full_time"/>
+        <field name="category_id" ref="hr_salary_rule_category_benefit"/>
+        <field name="condition_select">python</field>
+        <field name="condition_python">result = contract.contract_type == 'full_time'</field>
+        <field name="amount_select">fix</field>
+        <field name="amount_fix">200.0</field>
+        <field name="quantity">1</field>
+    </record>
+
+    <!-- =============================================
+         STRUCTURE TYPE: MEDIO TIEMPO
+    ============================================= -->
+    <record id="structure_type_part_time" model="hr.payroll.structure.type">
+        <field name="name">Medio Tiempo</field>
+        <field name="wage_type">monthly</field>
+    </record>
+
+    <record id="structure_part_time" model="hr.payroll.structure">
+        <field name="name">Nómina Medio Tiempo</field>
+        <field name="type_id" ref="structure_type_part_time"/>
+    </record>
+
+    <!-- Regla: Salario Base -->
+    <record id="rule_basic_part_time" model="hr.salary.rule">
+        <field name="name">Salario Base</field>
+        <field name="code">BASIC</field>
+        <field name="sequence">10</field>
+        <field name="struct_id" ref="structure_part_time"/>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="condition_select">none</field>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">result = contract.wage</field>
+    </record>
+
+    <!-- Regla: Vacaciones (medio tiempo) -->
+    <record id="rule_vacation_part_time" model="hr.salary.rule">
+        <field name="name">Vacaciones</field>
+        <field name="code">VACATION</field>
+        <field name="sequence">20</field>
+        <field name="struct_id" ref="structure_part_time"/>
+        <field name="category_id" ref="hr_salary_rule_category_benefit"/>
+        <field name="condition_select">python</field>
+        <field name="condition_python">result = contract.contract_type == 'part_time'</field>
+        <field name="amount_select">fix</field>
+        <field name="amount_fix">75.0</field>
+        <field name="quantity">1</field>
+    </record>
+
+    <!-- Regla: Prestaciones (medio tiempo) -->
+    <record id="rule_severance_part_time" model="hr.salary.rule">
+        <field name="name">Prestaciones</field>
+        <field name="code">SEVERANCE</field>
+        <field name="sequence">30</field>
+        <field name="struct_id" ref="structure_part_time"/>
+        <field name="category_id" ref="hr_salary_rule_category_benefit"/>
+        <field name="condition_select">python</field>
+        <field name="condition_python">result = contract.contract_type == 'part_time'</field>
+        <field name="amount_select">percentage</field>
+        <field name="amount_percentage">5.0</field>
+        <field name="amount_percentage_base">contract.wage</field>
+        <field name="quantity">1</field>
+    </record>
+
+    <!-- =============================================
+         STRUCTURE TYPE: TEMPORAL
+    ============================================= -->
+    <record id="structure_type_temporary" model="hr.payroll.structure.type">
+        <field name="name">Temporal</field>
+        <field name="wage_type">monthly</field>
+    </record>
+
+    <record id="structure_temporary" model="hr.payroll.structure">
+        <field name="name">Nómina Temporal</field>
+        <field name="type_id" ref="structure_type_temporary"/>
+    </record>
+
+    <!-- Regla: Salario Base -->
+    <record id="rule_basic_temporary" model="hr.salary.rule">
+        <field name="name">Salario Base</field>
+        <field name="code">BASIC</field>
+        <field name="sequence">10</field>
+        <field name="struct_id" ref="structure_temporary"/>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="condition_select">none</field>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">result = contract.wage</field>
+    </record>
+
+    <!-- Regla: Bono (temporal) -->
+    <record id="rule_bonus_temporary" model="hr.salary.rule">
+        <field name="name">Bono</field>
+        <field name="code">BONUS</field>
+        <field name="sequence">20</field>
+        <field name="struct_id" ref="structure_temporary"/>
+        <field name="category_id" ref="hr_salary_rule_category_benefit"/>
+        <field name="condition_select">python</field>
+        <field name="condition_python">result = contract.contract_type == 'temporary'</field>
+        <field name="amount_select">fix</field>
+        <field name="amount_fix">100.0</field>
+        <field name="quantity">1</field>
+    </record>
+
+</odoo>
