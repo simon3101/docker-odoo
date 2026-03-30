@@ -99,3 +99,14 @@ class TestDiscountPolitiks(AccountTestInvoicingCommon):
         with self.assertRaises(ValidationError):
             self.rule_retail.discount = -1.0
             self.rule_retail._check_discount()
+
+    def test_customer_type_without_rule_raises_validation_error(self):
+        """Caso límite: asignar tipo de cliente con regla inactiva lanza ValidationError"""
+        self.rule_retail.active = False
+        with self.assertRaises(ValidationError):
+            self.env['res.partner'].create({
+                'name': 'Cliente Sin Regla',
+                'customer_rank': 1,
+                'customer_type': 'retail',
+            })
+        self.rule_retail.active = True
