@@ -53,7 +53,8 @@
             <xpath expr="//notebook" position="inside">
                 <page string="Etiquetas de Almacenamiento" name="storage_tags">
                     <field name="storage_tag_ids" widget="many2many_tags"
-                           options="{'color_field': 'color', 'no_create_edit': False}"/>
+                           options="{'color_field': 'color', 'no_create_edit': False}"
+                           context="{'default_product_ids': [(4, id)]}"/>
                 </page>
             </xpath>
         </field>
