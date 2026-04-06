@@ -36,6 +36,8 @@ class ProductTemplate(models.Model):
             if product.stock_min > 0 and qty < product.stock_min:
                 # Solo genera alerta si no se ha enviado una previamente
                 if not product.stock_alert_sent:
+                    group = self.env.ref('stock.group_stock_manager')
+                    partner_ids = group.users.mapped('partner_id').ids
                     product.message_post(
                         body=Markup(
                             '⚠️ <b>Stock crítico:</b> El producto <b>%s</b> '
@@ -43,7 +45,8 @@ class ProductTemplate(models.Model):
                             'por debajo del mínimo configurado de %s.'
                         ) % (html_escape(product.name), qty, product.stock_min),
                         message_type='comment',
-                        subtype_xmlid='mail.mt_note',
+                        subtype_xmlid='mail.mt_comment',
+                        partner_ids=partner_ids,
                     )
                     product.stock_alert_sent = True
             else:
