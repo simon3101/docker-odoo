@@ -39,7 +39,6 @@ class TestStockCriticalAlert(TransactionCase):
         products._check_critical_stock()
 
     # --- Tests del método directo ---
-
     def test_alert_generated_when_stock_below_minimum(self):
         """Verifica que se genera una alerta cuando el stock está por debajo del mínimo"""
         self._set_stock(self.product_a, 5.0)
@@ -63,7 +62,6 @@ class TestStockCriticalAlert(TransactionCase):
             'No debe generarse alerta si el stock está sobre el mínimo')
 
     # --- Tests del cron ---
-
     def test_cron_generates_alert_for_product_below_minimum(self):
         """Cron genera alerta cuando un producto está bajo el mínimo"""
         self._set_stock(self.product_a, 3.0)
@@ -74,15 +72,6 @@ class TestStockCriticalAlert(TransactionCase):
         self.assertEqual(len(self._get_alerts(self.product_b)), 0,
             'El cron no debe generar alerta para producto_b sobre el mínimo')
 
-    def test_cron_only_alerts_products_below_minimum(self):
-        """Cron solo alerta productos que estén bajo su mínimo, no todos"""
-        self._set_stock(self.product_a, 3.0)
-        self._set_stock(self.product_b, 20.0)
-        self._run_cron()
-        self.assertEqual(len(self._get_alerts(self.product_a)), 1,
-            'Solo producto_a debe tener alerta')
-        self.assertEqual(len(self._get_alerts(self.product_b)), 0,
-            'Producto_b no debe tener alerta')
 
     def test_cron_no_error_after_stock_replenishment(self):
         """Cron no falla cuando un producto que tenía stock bajo fue repuesto"""

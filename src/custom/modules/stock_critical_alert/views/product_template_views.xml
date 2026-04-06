@@ -23,7 +23,7 @@
     <menuitem
         id="menu_stock_critical_alert"
         name="Stock Crítico"
-        parent="stock.menu_stock_root"
+        parent="stock.menu_stock_inventory_control"
         action="action_stock_critical_dashboard"
         sequence="99"/>
 
