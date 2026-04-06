@@ -46,7 +46,7 @@ class TestStockStorageTags(TransactionCase):
         self.assertIn(self.tag_b, self.product.storage_tag_ids)
 
     def test_many2many_relation_from_tag(self):
-        """Verifica la relación inversa: desde la etiqueta ver sus productos"""
+        """Verifica la relación inversa: al asignar desde el producto, la etiqueta refleja la relacion con el producto"""
         self.product.storage_tag_ids = [(4, self.tag_a.id)]
         self.assertIn(self.product, self.tag_a.product_ids)
 
